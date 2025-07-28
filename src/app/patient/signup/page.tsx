@@ -19,7 +19,7 @@ export default function PatientSignupPage() {
   const router = useRouter();
 
   const {
-    register,
+    register, 
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -42,7 +42,7 @@ export default function PatientSignupPage() {
               type="text"
               {...register("name")}
               placeholder="Jane Doe"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 border border-green-500 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
           </div>
@@ -53,7 +53,7 @@ export default function PatientSignupPage() {
               type="email"
               {...register("email")}
               placeholder="patient@example.com"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 border border-green-500 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
             />
             {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
           </div>
@@ -64,7 +64,7 @@ export default function PatientSignupPage() {
               type="password"
               {...register("password")}
               placeholder="********"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 border border-green-500 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
             />
             {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
           </div>
@@ -75,7 +75,7 @@ export default function PatientSignupPage() {
               type="password"
               {...register("confirmPassword")}
               placeholder="********"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-2 border border-green-500 rounded focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-800"
             />
             {errors.confirmPassword && <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>}
           </div>

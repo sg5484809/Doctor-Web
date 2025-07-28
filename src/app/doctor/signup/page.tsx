@@ -15,7 +15,7 @@ const signupSchema = Yup.object().shape({
     .required("Confirm Password is required"),
 });
 
-export default function SignupPage() {
+export default function DoctorSignupPage() {
   const router = useRouter();
 
   const {
@@ -28,8 +28,8 @@ export default function SignupPage() {
 
   const onSubmit = (data: any) => {
     console.log("Signup Data:", data);
-    // Simulate successful signup
-    router.push("/login"); // redirect to login after signup
+    // ✅ Simulate successful signup and redirect to login with query
+    router.push("/doctor/login?signup=success");
   };
 
   return (
@@ -44,7 +44,7 @@ export default function SignupPage() {
               type="text"
               {...register("name")}
               placeholder="Dr. John Doe"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 border-blue-500"
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
           </div>
@@ -55,7 +55,7 @@ export default function SignupPage() {
               type="email"
               {...register("email")}
               placeholder="doctor@example.com"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 border-blue-500"
             />
             {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
           </div>
@@ -66,7 +66,7 @@ export default function SignupPage() {
               type="password"
               {...register("password")}
               placeholder="********"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 border-blue-500"
             />
             {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
           </div>
@@ -77,21 +77,21 @@ export default function SignupPage() {
               type="password"
               {...register("confirmPassword")}
               placeholder="********"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800 border-blue-500"
             />
             {errors.confirmPassword && (
               <p className="text-sm text-red-500 mt-1">{errors.confirmPassword.message}</p>
             )}
           </div>
 
-          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+          <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition cursor-pointer">
             Sign Up
           </button>
         </form>
 
         <p className="text-sm text-center text-gray-500 mt-4">
           Already have an account?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/doctor/login" className="text-blue-600 hover:underline">
             Login
           </Link>
         </p>

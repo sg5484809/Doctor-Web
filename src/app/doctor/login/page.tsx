@@ -1,5 +1,7 @@
+// src/app/doctor/login/page.tsx
 'use client';
 
+import React from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -22,10 +24,26 @@ export default function LoginPage() {
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = (data: any) => {
-    console.log("Login data:", data);
-    // Simulate login success
-    router.push("/dashboard"); // redirect to dashboard (create later)
+  const onSubmit = async (data: any) => {
+    try {
+      const response = await fetch("/api/doctor/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // You can store doctor info in localStorage/context here
+        router.push("/doctor/details");
+      } else {
+        alert(result.message || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -38,31 +56,28 @@ export default function LoginPage() {
             <input
               type="email"
               {...register("email")}
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
               placeholder="doctor@example.com"
             />
             {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>}
           </div>
-
           <div>
             <label className="block text-sm mb-1 text-gray-700">Password</label>
             <input
               type="password"
               {...register("password")}
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-blue-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
               placeholder="********"
             />
             {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>}
           </div>
-
           <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
             Login
           </button>
         </form>
-
         <p className="text-sm text-center text-gray-500 mt-4">
-          Don't have an account?{" "}
-          <Link href="/signup" className="text-blue-600 hover:underline">
+          Don&apos;t have an account?{" "}
+          <Link href="/doctor/signup" className="text-blue-600 hover:underline">
             Sign up
           </Link>
         </p>
