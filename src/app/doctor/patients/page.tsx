@@ -49,7 +49,7 @@ export default function DoctorPatientsPage() {
           {patients.map((patient) => (
             <div key={patient.id} className="bg-white shadow-lg rounded-lg p-5">
               <p><strong className="text-gray-700">Name:</strong> {patient.name}</p>
-              <p><strong className="text-gray-700">Appointment Date:</strong> {patient.date}</p>
+              <p><strong className="text-gray-700">Appointment Date:</strong> {patient.appointmentDate}</p>
               <p><strong className="text-gray-700">Time:</strong> {patient.appointmentTime}</p>
               <p><strong className="text-gray-700">Status:</strong> {patient.status}</p>
 
