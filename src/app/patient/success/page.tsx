@@ -1,11 +1,13 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import React from 'react';
 
 export default function AppointmentSuccessPage() {
   const searchParams = useSearchParams();
-  const doctorName = searchParams.get('name');
-  const payment = searchParams.get('payment');
+
+  const doctorName = searchParams?.get('name') || 'Doctor';
+  const payment = searchParams?.get('payment') || 'payLater';
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
