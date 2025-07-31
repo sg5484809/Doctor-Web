@@ -1,13 +1,12 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
+import { Suspense } from 'react';
 
-export default function AppointmentSuccessPage() {
+function AppointmentDetails() {
   const searchParams = useSearchParams();
-
-  const doctorName = searchParams?.get('name') || 'Doctor';
-  const payment = searchParams?.get('payment') || 'payLater';
+  const doctorName = searchParams.get('name');
+  const payment = searchParams.get('payment');
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
@@ -24,5 +23,13 @@ export default function AppointmentSuccessPage() {
         <p className="text-sm text-gray-400">Thank you for using our service.</p>
       </div>
     </div>
+  );
+}
+
+export default function AppointmentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="text-center mt-10">Loading appointment...</div>}>
+      <AppointmentDetails />
+    </Suspense>
   );
 }
