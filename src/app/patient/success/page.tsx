@@ -19,7 +19,7 @@ export default function AppointmentSuccessPage() {
             {payment === 'payNow' ? 'Pay Now' : 'Pay Later'}
           </strong>
         </p>
-        <p className="text-sm text-gray-500">Thank you for using our service.</p>
+        <p className="text-sm text-gray-400">Thank you for using our service.</p>
       </div>
     </div>
   );

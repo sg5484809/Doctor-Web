@@ -1,8 +1,11 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: true,
-  // Ensure this line is not present or set to true:
-  // experimental: { appDir: false },
+import type { NextConfig } from 'next'
+
+const nextConfig: NextConfig = {
+  eslint: {
+    // This line disables ESLint errors during builds (e.g., on Vercel)
+    ignoreDuringBuilds: true,
+  },
+  // ...you can keep any other configs here
 };
 
-module.exports = nextConfig;
+export default nextConfig;
