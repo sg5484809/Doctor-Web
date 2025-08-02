@@ -1,18 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import moment from 'moment';
-import { View } from 'react-big-calendar';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
+
+// ✅ View type for calendar
+type ViewType = 'month' | 'week' | 'day';
 
 type EventType = {
   id: string;
@@ -24,7 +26,7 @@ type EventType = {
 
 const DoctorCalendar = () => {
   const [appointments, setAppointments] = useState<EventType[]>([]);
-  const [currentView, setCurrentView] = useState<Views>('week');
+  const [currentView, setCurrentView] = useState<ViewType>('week');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [newStatus, setNewStatus] = useState('');
@@ -137,7 +139,7 @@ const DoctorCalendar = () => {
           {['month', 'week', 'day'].map((view) => (
             <button
               key={view}
-              onClick={() => setCurrentView(view as Views)}
+              onClick={() => setCurrentView(view as ViewType)}
               className={`px-4 py-2 rounded ${
                 currentView === view ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-950'
               }`}
@@ -154,10 +156,10 @@ const DoctorCalendar = () => {
             startAccessor="start"
             endAccessor="end"
             view={currentView}
-            onView={(view) => setCurrentView(view)}
+            onView={(view: ViewType) => setCurrentView(view)}
             views={['month', 'week', 'day']}
             date={currentDate}
-            onNavigate={(newDate) => setCurrentDate(newDate)}
+            onNavigate={(newDate: Date) => setCurrentDate(newDate)}
             eventPropGetter={eventStyleGetter}
             onDoubleClickEvent={handleDoubleClickEvent}
             onEventDrop={handleEventDrop}
@@ -166,10 +168,11 @@ const DoctorCalendar = () => {
           />
         </div>
 
-        {/* Form modal below the calendar */}
         {selectedEvent && (
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white border p-4 rounded shadow-md z-50">
-            <h2 className="font-semibold mb-2 text-cyan-950">Update Status for: {selectedEvent.title}</h2>
+            <h2 className="font-semibold mb-2 text-cyan-950">
+              Update Status for: {selectedEvent.title}
+            </h2>
             <div className="flex gap-4 mb-2 text-indigo-950">
               {['seen', 'pending', 'cancelled'].map((status) => (
                 <label key={status} className="flex items-center gap-1">
