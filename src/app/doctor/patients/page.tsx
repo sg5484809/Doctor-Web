@@ -1,32 +1,31 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function DoctorPatientsPage() {
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const res = await fetch('https://mocki.io/v1/e7847e95-9773-41b2-a063-c1885c70c42a');
-        const data = await res.json();
-
-        // Add default 'pending' status if missing
-        const updated = data.map((p: any) => ({
-          ...p,
-          status: p.status || 'pending',
-        }));
-
-        setPatients(updated);
-      } catch (err) {
-        console.error('Failed to fetch patients:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPatients();
+    const stored = localStorage.getItem('appointments');
+    if (stored) {
+      setPatients(JSON.parse(stored));
+      setLoading(false);
+    } else {
+      fetch('https://mocki.io/v1/e7847e95-9773-41b2-a063-c1885c70c42a')
+        .then((res) => res.json())
+        .then((data) => {
+          const updated = data.map((p: any) => ({
+            ...p,
+            status: p.status || 'pending',
+          }));
+          setPatients(updated);
+          localStorage.setItem('appointments', JSON.stringify(updated));
+        })
+        .catch((err) => console.error('Fetch error:', err))
+        .finally(() => setLoading(false));
+    }
   }, []);
 
   const handleStatusChange = (id: string, newStatus: string) => {
@@ -34,11 +33,30 @@ export default function DoctorPatientsPage() {
       p.id === id ? { ...p, status: newStatus } : p
     );
     setPatients(updated);
+    localStorage.setItem('appointments', JSON.stringify(updated));
+  };
+
+  const getStatusClasses = (status: string) => {
+    switch (status) {
+      case 'seen':
+        return 'bg-green-50 border border-green-500';
+      case 'cancelled':
+        return 'bg-red-50 border border-red-500';
+      default:
+        return 'bg-white border border-gray-300';
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 p-6">
-      <h1 className="text-3xl font-semibold mb-6 text-center text-green-700">Patient Appointments</h1>
+    <div className="min-h-screen bg-gray-50 text-gray-800 p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-blue-500">Patient Appointments</h1>
+        <Link href="/doctor/calendar">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded cursor-pointer">
+            View Calendar
+          </button>
+        </Link>
+      </div>
 
       {loading ? (
         <div className="text-center text-gray-600">Loading...</div>
@@ -47,23 +65,26 @@ export default function DoctorPatientsPage() {
       ) : (
         <div className="grid gap-6 max-w-4xl mx-auto">
           {patients.map((patient) => (
-            <div key={patient.id} className="bg-white shadow-lg rounded-lg p-5">
+            <div
+              key={patient.id}
+              className={`shadow-lg rounded-lg p-5 ${getStatusClasses(patient.status)}`}
+            >
               <p><strong className="text-gray-700">Name:</strong> {patient.name}</p>
               <p><strong className="text-gray-700">Appointment Date:</strong> {patient.appointmentDate}</p>
               <p><strong className="text-gray-700">Time:</strong> {patient.appointmentTime}</p>
-              <p><strong className="text-gray-700">Status:</strong> {patient.status}</p>
+              <p><strong className="text-gray-700">Status:</strong> <span className="capitalize">{patient.status}</span></p>
 
               {patient.status === 'pending' && (
                 <div className="mt-4 flex gap-4">
                   <button
                     onClick={() => handleStatusChange(patient.id, 'cancelled')}
-                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded"
+                    className="bg-red-500 hover:bg-red-600 text-white py-1 px-4 rounded cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => handleStatusChange(patient.id, 'seen')}
-                    className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded"
+                    className="bg-green-500 hover:bg-green-600 text-white py-1 px-4 rounded cursor-pointer"
                   >
                     Mark as Seen
                   </button>
