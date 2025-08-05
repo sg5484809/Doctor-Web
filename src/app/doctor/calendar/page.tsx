@@ -13,7 +13,6 @@ import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
-// ✅ View type for calendar
 type ViewType = 'month' | 'week' | 'day';
 
 type EventType = {
@@ -26,7 +25,7 @@ type EventType = {
 
 const DoctorCalendar = () => {
   const [appointments, setAppointments] = useState<EventType[]>([]);
-  const [currentView, setCurrentView] = useState<ViewType>('week');
+  const [currentView, setCurrentView] = useState<ViewType>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [newStatus, setNewStatus] = useState('');
@@ -110,31 +109,55 @@ const DoctorCalendar = () => {
   };
 
   const eventStyleGetter = (event: EventType) => {
-    const today = moment().startOf('day');
-    const eventDate = moment(event.start).startOf('day');
+    return {
+      style: {
+        color: 'white',
+        backgroundColor: 'rgba(0,0,0,0.0)',
+        borderRadius: '8px',
+        padding: '4px 8px',
+        fontWeight: 'bold',
+        border: 'none',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+      },
+    };
+  };
 
-    let backgroundColor = '#60a5fa'; // upcoming
-    if (eventDate.isSame(today)) backgroundColor = '#10b981'; // today
-    else if (eventDate.isBefore(today)) backgroundColor = '#f97316'; // past
+  const dayPropGetter = (date: Date) => {
+    const today = moment().startOf('day');
+    const cellDate = moment(date).startOf('day');
+
+    const hasAppointment = appointments.some((appt) =>
+      moment(appt.start).startOf('day').isSame(cellDate)
+    );
+
+    if (!hasAppointment) {
+      return {
+        style: {
+          backgroundColor: 'white',
+          border: '1px solid #d1d5db', // Tailwind's gray-300
+        },
+      };
+    }
+
+    let backgroundColor = '#60a5fa'; // future
+    if (cellDate.isSame(today)) backgroundColor = '#10b981'; // today
+    else if (cellDate.isBefore(today)) backgroundColor = '#f97316'; // past
 
     return {
       style: {
         backgroundColor,
         color: 'white',
-        borderRadius: '4px',
-        padding: '4px',
-        fontWeight: 'bold',
       },
     };
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="p-4">
+      <div className="p-4 bg-blue-100">
         <h1 className="text-2xl font-bold text-center mb-6 text-blue-700">
           Doctor Appointment Calendar
         </h1>
-
+        {/* View buttons */}
         <div className="mb-4 flex justify-center gap-4">
           {['month', 'week', 'day'].map((view) => (
             <button
@@ -149,6 +172,7 @@ const DoctorCalendar = () => {
           ))}
         </div>
 
+        {/* Calendar */}
         <div style={{ height: '75vh' }}>
           <DnDCalendar
             localizer={localizer}
@@ -161,6 +185,7 @@ const DoctorCalendar = () => {
             date={currentDate}
             onNavigate={(newDate: Date) => setCurrentDate(newDate)}
             eventPropGetter={eventStyleGetter}
+            dayPropGetter={dayPropGetter} // New: color date cells
             onDoubleClickEvent={handleDoubleClickEvent}
             onEventDrop={handleEventDrop}
             resizable={false}
@@ -168,6 +193,7 @@ const DoctorCalendar = () => {
           />
         </div>
 
+        {/* Status update modal */}
         {selectedEvent && (
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white border p-4 rounded shadow-md z-50">
             <h2 className="font-semibold mb-2 text-cyan-950">
