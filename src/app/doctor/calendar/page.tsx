@@ -14,7 +14,7 @@ const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
 type ViewType = 'month' | 'week' | 'day';
-
+ 
 type EventType = {
   id: string;
   title: string;

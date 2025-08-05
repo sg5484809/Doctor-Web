@@ -34,6 +34,6 @@ export default function Home() {
           I am a Patient
         </button>
       </div>
-    </div>
+    </div> 
   );
 }
