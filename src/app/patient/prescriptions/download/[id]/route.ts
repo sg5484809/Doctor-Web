@@ -1,10 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
-interface RouteParams {
-  id: string;
-}
-
+// Mock function to fetch prescription and patient data
 async function getData(id: string) {
   const prescriptions = JSON.parse(
     '[{"id":"1","patientId":"101","medicines":["Paracetamol"],"dosage":"500mg","duration":"5 days","notes":"Take after meals"}]'
@@ -22,8 +19,12 @@ async function getData(id: string) {
   return { prescription, patient };
 }
 
-export async function GET(req: NextRequest, context: { params: RouteParams }) {
-  const { id } = context.params;
+// ✅ Correct GET signature for Next.js App Router
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
 
   const data = await getData(id);
   if (!data) {
@@ -50,15 +51,18 @@ export async function GET(req: NextRequest, context: { params: RouteParams }) {
     });
   };
 
+  // Header
   drawText("Dr. Andrew Staton", 205, height - 65, 20);
   drawText("MBBS, MD (Cardiology)", 205, height - 95, 14);
 
+  // Patient Info
   drawText(`Patient Name: ${patient.name}`, 140, height - 225, 16);
   drawText(`Date: ${patient.appointmentDate}`, 600, height - 225, 16);
   drawText(`Age: ${patient.age || "N/A"}`, 70, height - 285, 16);
   drawText(`Gender: ${patient.sex || "N/A"}`, 300, height - 285, 16);
   drawText(`Weight: ${patient.weight || "N/A"}`, 600, height - 285, 16);
 
+  // Prescription details
   let yPosition = height - 350;
   prescription.medicines.forEach((med: string) => {
     drawText(
@@ -75,7 +79,7 @@ export async function GET(req: NextRequest, context: { params: RouteParams }) {
   }
 
   const pdfBytes = await pdfDoc.save();
-  const pdfBuffer = Buffer.from(pdfBytes); // ✅ Convert Uint8Array to Buffer
+  const pdfBuffer = Buffer.from(pdfBytes); // ✅ Fix for TypeScript
 
   return new NextResponse(pdfBuffer, {
     status: 200,
