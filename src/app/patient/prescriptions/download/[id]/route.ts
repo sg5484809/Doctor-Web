@@ -19,10 +19,10 @@ async function getData(id: string) {
   return { prescription, patient };
 }
 
-// ✅ Correct GET handler for Next.js App Router dynamic route
+// Correct GET handler for Next.js App Router dynamic route
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: any  // You can import RequestEvent type from "next/server" for better typing
 ) {
   const id = context.params.id;
 
@@ -79,7 +79,7 @@ export async function GET(
   }
 
   const pdfBytes = await pdfDoc.save();
-  const pdfBuffer = Buffer.from(pdfBytes); // ✅ Convert Uint8Array to Buffer
+  const pdfBuffer = Buffer.from(pdfBytes);
 
   return new NextResponse(pdfBuffer, {
     status: 200,
