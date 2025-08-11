@@ -3,8 +3,16 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+interface Patient {
+  id: string;
+  name: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  status?: string;
+}
+
 export default function DoctorPatientsPage() {
-  const [patients, setPatients] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -15,8 +23,8 @@ export default function DoctorPatientsPage() {
     } else {
       fetch('https://mocki.io/v1/e7847e95-9773-41b2-a063-c1885c70c42a')
         .then((res) => res.json())
-        .then((data) => {
-          const updated = data.map((p: any) => ({
+        .then((data: Patient[]) => {
+          const updated = data.map((p) => ({
             ...p,
             status: p.status || 'pending',
           }));
@@ -49,16 +57,7 @@ export default function DoctorPatientsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-semibold text-blue-500">Patient Appointments</h1>
-        <div className="flex gap-4">
-          <Link href="/doctor/calendar">
-            <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded cursor-pointer">
-              View Calendar
-            </button>
-          </Link>
-        </div>
-      </div>
+      <h1 className="text-3xl font-semibold text-blue-500 mb-6">Patient Appointments</h1>
 
       {loading ? (
         <div className="text-center text-gray-600">Loading...</div>
@@ -69,7 +68,7 @@ export default function DoctorPatientsPage() {
           {patients.map((patient) => (
             <div
               key={patient.id}
-              className={`shadow-lg rounded-lg p-5 ${getStatusClasses(patient.status)}`}
+              className={`shadow-lg rounded-lg p-5 ${getStatusClasses(patient.status || '')}`}
             >
               <p><strong className="text-gray-700">Name:</strong> {patient.name}</p>
               <p><strong className="text-gray-700">Appointment Date:</strong> {patient.appointmentDate}</p>
@@ -102,6 +101,12 @@ export default function DoctorPatientsPage() {
                     Make Prescription
                   </Link>
                 )}
+
+                <Link href={`/doctor/patients/history/${patient.id}`}>
+                  <button className="bg-purple-500 hover:bg-purple-600 text-white py-1 px-4 rounded cursor-pointer">
+                    View History
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
@@ -110,4 +115,3 @@ export default function DoctorPatientsPage() {
     </div>
   );
 }
- 
