@@ -19,12 +19,12 @@ async function getData(id: string) {
   return { prescription, patient };
 }
 
-// ✅ Correct GET signature for Next.js App Router
+// ✅ Correct GET handler for Next.js App Router dynamic route
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = params;
+  const id = context.params.id;
 
   const data = await getData(id);
   if (!data) {
@@ -79,7 +79,7 @@ export async function GET(
   }
 
   const pdfBytes = await pdfDoc.save();
-  const pdfBuffer = Buffer.from(pdfBytes); // ✅ Fix for TypeScript
+  const pdfBuffer = Buffer.from(pdfBytes); // ✅ Convert Uint8Array to Buffer
 
   return new NextResponse(pdfBuffer, {
     status: 200,
