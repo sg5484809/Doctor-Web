@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Patient {
   id: string;
@@ -14,6 +15,7 @@ interface Patient {
 export default function DoctorPatientsPage() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const stored = localStorage.getItem('appointments');
@@ -94,12 +96,21 @@ export default function DoctorPatientsPage() {
                 )}
 
                 {patient.status === 'seen' && (
-                  <Link
-                    href={`/doctor/prescriptions?patientId=${patient.id}&name=${encodeURIComponent(patient.name)}`}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white py-1 px-4 rounded cursor-pointer"
-                  >
-                    Make Prescription
-                  </Link>
+                  <>
+                    <Link
+                      href={`/doctor/prescriptions?patientId=${patient.id}&name=${encodeURIComponent(patient.name)}`}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white py-1 px-4 rounded cursor-pointer"
+                    >
+                      Make Prescription
+                    </Link>
+
+                    <button
+                      onClick={() => router.push(`/doctor/reviews/${patient.id}`)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-4 rounded cursor-pointer"
+                    >
+                      Show Ratings
+                    </button>
+                  </>
                 )}
 
                 <Link href={`/doctor/patients/history/${patient.id}`}>

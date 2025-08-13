@@ -48,6 +48,11 @@ export default function PrescriptionsPage() {
     router.push(`/patient/prescriptions/download/${id}`);
   };
 
+  // Changed to point to reviews page instead of prescriptions/rating
+  const handleGiveRating = (id: string) => {
+    router.push(`/patient/reviews/${id}`);
+  };
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-8">
@@ -100,6 +105,12 @@ export default function PrescriptionsPage() {
                   className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
                 >
                   Download
+                </button>
+                <button
+                  onClick={() => handleGiveRating(p.id)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+                >
+                  Give Rating
                 </button>
               </div>
             </div>
