@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
 import jsPDF from "jspdf";
 
-// The context type is now passed like this:
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  context: { params: { id: string } } // ✅ correct typing
 ) {
   try {
-    const { id } = context.params;
+    const { id } = context.params; // ✅ works now
 
-    // Example: Generate a simple PDF
     const doc = new jsPDF();
     doc.setFontSize(20);
     doc.text(`Prescription ID: ${id}`, 10, 20);
