@@ -1,77 +1,64 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface Review {
-  doctorId: string;
+  id: string;
   patientName: string;
   rating: number;
   comment: string;
-  date: string;
 }
 
 export default function DoctorReviewsPage() {
-  const { id } = useParams(); // doctorId
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [avgRating, setAvgRating] = useState<number | null>(null);
+  const [averageRating, setAverageRating] = useState<number>(0);
 
   useEffect(() => {
-    const storedReviews: Review[] = JSON.parse(localStorage.getItem("reviews") || "[]");
+    // Example hardcoded reviews
+    const fetchedReviews: Review[] = [
+      { id: "1", patientName: "John Doe", rating: 5, comment: "Excellent care!" },
+      { id: "2", patientName: "Jane Smith", rating: 4, comment: "Very professional and friendly." },
+      { id: "3", patientName: "Robert Brown", rating: 3, comment: "Good, but wait time was long." },
+    ];
 
-    // Now filtering by doctorId
-    const doctorReviews = storedReviews.filter((r) => r.doctorId === id);
+    setReviews(fetchedReviews);
 
-    setReviews(doctorReviews);
-
-    if (doctorReviews.length > 0) {
-      const avg =
-        doctorReviews.reduce((sum, r) => sum + r.rating, 0) /
-        doctorReviews.length;
-      setAvgRating(Number(avg.toFixed(1)));
-    } else {
-      setAvgRating(null);
-    }
-  }, [id]);
+    const avg =
+      fetchedReviews.reduce((sum, review) => sum + review.rating, 0) /
+      fetchedReviews.length;
+    setAverageRating(avg);
+  }, []);
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Doctor Reviews</h2>
-      {avgRating !== null && (
-        <p>
-          Average Rating: <strong>{avgRating} ★</strong>
+    <div className="bg-white min-h-screen p-6">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold text-blue-700 text-center mb-4">
+          Patient Reviews
+        </h1>
+        <p className="text-lg text-center mb-6 text-gray-950">
+          Average Rating:{" "}
+          <span className="font-semibold text-yellow-500">
+            {averageRating.toFixed(1)} ★
+          </span>
         </p>
-      )}
-      {reviews.length === 0 ? (
-        <p>No reviews yet.</p>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0 }}>
-          {reviews.map((review, index) => (
-            <li
-              key={index}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                padding: "10px",
-                marginBottom: "10px",
-              }}
+
+        <div className="space-y-4">
+          {reviews.map((review) => (
+            <div
+              key={review.id}
+              className="bg-white p-4 rounded-lg shadow-lg border border-gray-100"
             >
-              <p>
-                <strong>Patient:</strong> {review.patientName}
+              <h2 className="text-lg font-semibold text-green-600">
+                {review.patientName}
+              </h2>
+              <p className="text-yellow-500">
+                {"★".repeat(review.rating) + "☆".repeat(5 - review.rating)}
               </p>
-              <p>
-                <strong>Rating:</strong> {review.rating} ★
-              </p>
-              <p>
-                <strong>Comment:</strong> {review.comment}
-              </p>
-              <p style={{ fontSize: "0.8em", color: "#666" }}>
-                {new Date(review.date).toLocaleString()}
-              </p>
-            </li>
+              <p className="text-gray-700 mt-1">{review.comment}</p>
+            </div>
           ))}
-        </ul>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

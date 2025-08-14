@@ -58,8 +58,19 @@ export default function DoctorPatientsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 p-6">
-      <h1 className="text-3xl font-semibold text-blue-500 mb-6">Patient Appointments</h1>
+    <div className="min-h-screen bg-gray-50 text-gray-800 p-6 relative">
+      {/* Header with button */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-blue-500">
+          Patient Appointments
+        </h1>
+        <button
+          onClick={() => router.push('/doctor/calendar')}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md"
+        >
+          View Calendar
+        </button>
+      </div>
 
       {loading ? (
         <div className="text-center text-gray-600">Loading...</div>
@@ -72,10 +83,19 @@ export default function DoctorPatientsPage() {
               key={patient.id}
               className={`shadow-lg rounded-lg p-5 ${getStatusClasses(patient.status || '')}`}
             >
-              <p><strong className="text-gray-700">Name:</strong> {patient.name}</p>
-              <p><strong className="text-gray-700">Appointment Date:</strong> {patient.appointmentDate}</p>
-              <p><strong className="text-gray-700">Time:</strong> {patient.appointmentTime}</p>
-              <p><strong className="text-gray-700">Status:</strong> <span className="capitalize">{patient.status}</span></p>
+              <p>
+                <strong className="text-gray-700">Name:</strong> {patient.name}
+              </p>
+              <p>
+                <strong className="text-gray-700">Appointment Date:</strong> {patient.appointmentDate}
+              </p>
+              <p>
+                <strong className="text-gray-700">Time:</strong> {patient.appointmentTime}
+              </p>
+              <p>
+                <strong className="text-gray-700">Status:</strong>{' '}
+                <span className="capitalize">{patient.status}</span>
+              </p>
 
               <div className="mt-4 flex flex-wrap gap-4">
                 {patient.status === 'pending' && (

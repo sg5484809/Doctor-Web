@@ -43,18 +43,43 @@ export default function PrescriptionViewPage() {
     }
   }, [params.id]);
 
+  const handleDownload = async () => {
+    if (!prescription) return;
+    const res = await fetch(`/patient/prescriptions/download/${prescription.id}`);
+    if (!res.ok) {
+      alert('Failed to download PDF');
+      return;
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `prescription_${prescription.id}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
   if (!prescription || !patient) {
     return <p className="p-6 text-gray-600">Prescription not found.</p>;
   }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <button
-        onClick={() => router.back()}
-        className="mb-4 bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded"
-      >
-        Back
-      </button>
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => router.back()}
+          className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded"
+        >
+          Back
+        </button>
+        <button
+          onClick={handleDownload}
+          className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded"
+        >
+          Download PDF
+        </button>
+      </div>
 
       <div className="relative w-[800px] mx-auto border shadow-lg">
         {/* Background Template */}
@@ -98,4 +123,3 @@ export default function PrescriptionViewPage() {
     </div>
   );
 }
- 

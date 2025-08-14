@@ -1,91 +1,39 @@
-import { NextResponse, type NextRequest } from "next/server";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { NextRequest, NextResponse } from 'next/server';
+import { PDFDocument, rgb } from 'pdf-lib';
 
-// Mock function to fetch prescription and patient data
-async function getData(id: string) {
-  const prescriptions = JSON.parse(
-    '[{"id":"1","patientId":"101","medicines":["Paracetamol"],"dosage":"500mg","duration":"5 days","notes":"Take after meals"}]'
-  );
-  const patients = JSON.parse(
-    '[{"id":"101","name":"Riya Sharma","appointmentDate":"2025/08/06","age":"29","sex":"Female","weight":"58kg","diagnosis":"Flu"}]'
-  );
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params;
 
-  const prescription = prescriptions.find((p: any) => p.id === id);
-  if (!prescription) return null;
-
-  const patient = patients.find((a: any) => a.id === prescription.patientId);
-  if (!patient) return null;
-
-  return { prescription, patient };
-}
-
-// Correct GET handler for Next.js App Router dynamic route
-export async function GET(
-  req: NextRequest,
-  context: any  // You can import RequestEvent type from "next/server" for better typing
-) {
-  const id = context.params.id;
-
-  const data = await getData(id);
-  if (!data) {
-    return NextResponse.json(
-      { error: "Prescription not found" },
-      { status: 404 }
-    );
-  }
-
-  const { prescription, patient } = data;
-
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([800, 1100]);
-  const { height } = page.getSize();
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
-  const drawText = (text: string, x: number, y: number, size = 14) => {
-    page.drawText(text, {
-      x,
-      y,
-      size,
-      font,
-      color: rgb(0, 0, 0),
-    });
+  // Mock prescription data — replace with DB fetch
+  const prescription = {
+    id,
+    patientName: 'John Doe',
+    medicines: 'Paracetamol',
+    dosage: '500mg',
+    duration: '5 days',
+    notes: 'Take after meals',
   };
 
-  // Header
-  drawText("Dr. Andrew Staton", 205, height - 65, 20);
-  drawText("MBBS, MD (Cardiology)", 205, height - 95, 14);
+  // Create PDF
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([500, 600]);
+  const { height } = page.getSize();
+  const fontSize = 18;
 
-  // Patient Info
-  drawText(`Patient Name: ${patient.name}`, 140, height - 225, 16);
-  drawText(`Date: ${patient.appointmentDate}`, 600, height - 225, 16);
-  drawText(`Age: ${patient.age || "N/A"}`, 70, height - 285, 16);
-  drawText(`Gender: ${patient.sex || "N/A"}`, 300, height - 285, 16);
-  drawText(`Weight: ${patient.weight || "N/A"}`, 600, height - 285, 16);
-
-  // Prescription details
-  let yPosition = height - 350;
-  prescription.medicines.forEach((med: string) => {
-    drawText(
-      `${med} — ${prescription.dosage} — ${prescription.duration}`,
-      100,
-      yPosition,
-      16
-    );
-    yPosition -= 25;
-  });
-
-  if (prescription.notes) {
-    drawText(prescription.notes, 100, yPosition - 10, 14);
-  }
+  page.drawText('Prescription', { x: 50, y: height - 50, size: fontSize + 4, color: rgb(0, 0.53, 0.21) });
+  page.drawText(`Patient: ${prescription.patientName}`, { x: 50, y: height - 100, size: fontSize });
+  page.drawText(`Medicine: ${prescription.medicines}`, { x: 50, y: height - 140, size: fontSize });
+  page.drawText(`Dosage: ${prescription.dosage}`, { x: 50, y: height - 180, size: fontSize });
+  page.drawText(`Duration: ${prescription.duration}`, { x: 50, y: height - 220, size: fontSize });
+  page.drawText(`Notes: ${prescription.notes || '-'}`, { x: 50, y: height - 260, size: fontSize });
 
   const pdfBytes = await pdfDoc.save();
-  const pdfBuffer = Buffer.from(pdfBytes);
 
-  return new NextResponse(pdfBuffer, {
-    status: 200,
+  // ✅ Fix: Convert Uint8Array to Buffer for Next.js Response
+  return new NextResponse(Buffer.from(pdfBytes), {
     headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=prescription-${id}.pdf`,
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename=prescription_${id}.pdf`,
     },
   });
 }
